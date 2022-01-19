@@ -13,8 +13,8 @@ describe("<Home/>", () => {
       },
     ];
 
-    const { asFragment } = render(<Home products={products} />);
-    expect(asFragment()).toMatchSnapshot();
+    const homeComponent = render(<Home products={products} />);
+    expect(homeComponent.asFragment()).toMatchSnapshot();
   });
 
   const mockHandleAddTroley = { handleAddToTroley: jest.fn() };
@@ -27,8 +27,8 @@ describe("<Home/>", () => {
       },
     ];
 
-    const home = render(<Home products={products} />);
-    const button = home.getByText("+");
+    const homeComponent = render(<Home products={products} />);
+    const button = homeComponent.getByText("+");
     fireEvent.click(button);
     expect(button).toHaveBeenCalled(1);
   });
