@@ -27,8 +27,8 @@ describe("<Home/>", () => {
       },
     ];
 
-    const component = render(<Home products={products} />);
-    const button = component.getByText("+");
+    const home = render(<Home products={products} />);
+    const button = home.getByText("+");
     fireEvent.click(button);
     expect(button).toHaveBeenCalled(1);
   });
