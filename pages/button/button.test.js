@@ -6,8 +6,8 @@ import Button from "./index.jsx";
 const mockFn = jest.fn();
 describe("<Button/>", () => {
   it("must call handleAddArticleToTrolley", () => {
-    const button = render(<Button handle={mockFn} text="+" />);
-    const button = button.getByText("+");
+    const buttonComponent = render(<Button handle={mockFn} text="+" />);
+    const button = buttonComponent.getByText("+");
     fireEvent.click(button);
     expect(mockFn).toHaveBeenCalledTimes(1);
   });
