@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import {
   Text,
   Box,
@@ -22,6 +22,7 @@ import {
   QuerySnapshot,
 } from "firebase/firestore";
 import { motion } from "framer-motion";
+import { ContextLogin } from "../context/login-context";
 
 const getData = async () => {
   const docRef = await getDocs(query(collection(db, "article")));
@@ -31,21 +32,27 @@ const getData = async () => {
 export default function Home() {
   const [troley, setTroley] = useState([]);
   const [products, setProducts] = useState([]);
+  const context = useContext(ContextLogin);
 
   useEffect(() => {
-    const q = query(collection(db, "article"));
+    if (localStorage.getItem("products")) {
+      setProducts(JSON.parse(localStorage.getItem("products")));
+    } else {
+      const q = query(collection(db, "article"));
 
-    onSnapshot(q, (querySnapshot) => {
-      const localproducts = [];
-      querySnapshot.forEach((doc) => {
-        localproducts.push({
-          product: doc.data().product,
-          price: doc.data().price,
-          urlImage: doc.data().urlImage,
+      onSnapshot(q, (querySnapshot) => {
+        const localproducts = [];
+        querySnapshot.forEach((doc) => {
+          localproducts.push({
+            product: doc.data().product,
+            price: doc.data().price,
+            urlImage: doc.data().urlImage,
+          });
         });
+        setProducts(localproducts);
+        localStorage.setItem("products", JSON.stringify(localproducts));
       });
-      setProducts(localproducts);
-    });
+    }
   }, []);
 
   const handleAddToTroley = (product) => {
@@ -98,6 +105,7 @@ export default function Home() {
     );
     let url = `https://wa.me/54111111111?text=Hola!%20Quiero%20comprar%20${troleyProductsStringWhatsAppUrl}`;
   };
+
   return (
     <Container width="sm" backgroundColor="#ebebeb" minHeight="100vh">
       <Container>
