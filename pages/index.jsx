@@ -7,12 +7,11 @@ import {
   Image,
   Flex,
   VStack,
-  ButtonGroup,
   Stack,
   HStack,
 } from "@chakra-ui/react";
 import { nanoid } from "nanoid";
-import { app, db, listenArticles } from "../firebase/firebase-config";
+import { db } from "../firebase/firebase-config";
 import {
   collection,
   doc,
@@ -23,6 +22,7 @@ import {
 } from "firebase/firestore";
 import { motion } from "framer-motion";
 import { ContextLogin } from "../context/login-context";
+import { useRouter } from "next/router";
 
 const getData = async () => {
   const docRef = await getDocs(query(collection(db, "article")));
@@ -33,13 +33,14 @@ export default function Home() {
   const [troley, setTroley] = useState([]);
   const [products, setProducts] = useState([]);
   const context = useContext(ContextLogin);
+  const router = useRouter();
+
 
   useEffect(() => {
     if (localStorage.getItem("products")) {
       setProducts(JSON.parse(localStorage.getItem("products")));
     } else {
       const q = query(collection(db, "article"));
-
       onSnapshot(q, (querySnapshot) => {
         const localproducts = [];
         querySnapshot.forEach((doc) => {
@@ -88,6 +89,7 @@ export default function Home() {
   };
 
   const handleCompleteOrderWithWhatsApp = () => {
+    console.log("hola");
     let troleyProducts = troley.map((item) => {
       return `${item.product} ( x ${item.quantity}) ...$ ${
         item.price * item.quantity
@@ -104,6 +106,7 @@ export default function Home() {
       "%2C"
     );
     let url = `https://wa.me/54111111111?text=Hola!%20Quiero%20comprar%20${troleyProductsStringWhatsAppUrl}`;
+    router.replace(url)
   };
 
   return (
