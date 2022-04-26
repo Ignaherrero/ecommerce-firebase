@@ -12,14 +12,7 @@ import {
 } from "@chakra-ui/react";
 import { nanoid } from "nanoid";
 import { db } from "../firebase/firebase-config";
-import {
-  collection,
-  doc,
-  getDocs,
-  onSnapshot,
-  query,
-  QuerySnapshot,
-} from "firebase/firestore";
+import { collection, getDocs, onSnapshot, query } from "firebase/firestore";
 import { motion } from "framer-motion";
 import { ContextLogin } from "../context/login-context";
 import { useRouter } from "next/router";
@@ -35,25 +28,22 @@ export default function Home() {
   const context = useContext(ContextLogin);
   const router = useRouter();
 
-
   useEffect(() => {
-    if (localStorage.getItem("products")) {
-      setProducts(JSON.parse(localStorage.getItem("products")));
-    } else {
-      const q = query(collection(db, "article"));
-      onSnapshot(q, (querySnapshot) => {
-        const localproducts = [];
-        querySnapshot.forEach((doc) => {
-          localproducts.push({
-            product: doc.data().product,
-            price: doc.data().price,
-            urlImage: doc.data().urlImage,
-          });
+
+    const q = query(collection(db, "article"));
+    onSnapshot(q, (querySnapshot) => {
+      const localproducts = [];
+      querySnapshot.forEach((doc) => {
+        localproducts.push({
+          product: doc.data().product,
+          price: doc.data().price,
+          urlImage: doc.data().urlImage,
         });
-        setProducts(localproducts);
-        localStorage.setItem("products", JSON.stringify(localproducts));
       });
-    }
+      setProducts(localproducts);
+      localStorage.setItem("products", JSON.stringify(localproducts));
+    });
+    console.table(products);
   }, []);
 
   const handleAddToTroley = (product) => {
@@ -105,8 +95,8 @@ export default function Home() {
       /,/g,
       "%2C"
     );
-    let url = `https://wa.me/54111111111?text=Hola!%20Quiero%20comprar%20${troleyProductsStringWhatsAppUrl}`;
-    router.replace(url)
+    let url = `https://wa.me/+543401571936?text=Hola!%20Quiero%20comprar%20${troleyProductsStringWhatsAppUrl}`;
+    router.replace(url);
   };
 
   return (

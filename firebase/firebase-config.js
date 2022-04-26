@@ -1,17 +1,28 @@
 import "firebase/app";
-import { getFirestore, onSnapshot } from "firebase/firestore";
+import { getFirestore } from "firebase/firestore";
 import { getAuth, GoogleAuthProvider, signInWithPopup } from "firebase/auth";
 import "firebase/storage";
 import * as firebase from "firebase/app";
 import { getStorage, ref, uploadBytesResumable } from "firebase/storage";
-import { useContext } from "react";
-import { ContextLogin } from "../context/login-context";
+
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
 
 // Your web app's Firebase configuration
 // For Firebase JS SDK v7.20.0 and later, measurementId is optional
-const firebaseConfig = {
+
+// Initialize Firebase
+
+const firebaseConfigDevelopment = {
+  apiKey: process.env.NEXT_PUBLIC_APP_DEVELOPMENT_APIKEY,
+  authDomain: process.env.NEXT_PUBLIC_APP_DEVELOPMENT_AUTHDOMAIN,
+  projectId: process.env.NEXT_PUBLIC_APP_DEVELOPMENT_PROJECTID,
+  storageBucket: process.env.NEXT_PUBLIC_APP_DEVELOPMENT_STORAGEBUCKET,
+  messagingSenderId: process.env.NEXT_PUBLIC_APP_DEVELOPMENT_MESSAGINGSENDERID,
+  appId: process.env.NEXT_PUBLIC_APP_DEVELOPMENT_APPID,
+  measurementId: process.env.NEXT_PUBLIC_APP_DEVELOPMENT_MEASUREMENTID,
+};
+const firebaseConfigProduction = {
   apiKey: process.env.NEXT_PUBLIC_APP_APIKEY,
   authDomain: process.env.NEXT_PUBLIC_APP_AUTHDOMAIN,
   projectId: process.env.NEXT_PUBLIC_APP_PROJECTID,
@@ -21,8 +32,13 @@ const firebaseConfig = {
   measurementId: process.env.NEXT_PUBLIC_APP_MEASUREMENTID,
 };
 
-// Initialize Firebase
-const app = firebase.initializeApp(firebaseConfig);
+let app;
+
+if (process.env.NODE_ENV === "development") {
+  app = firebase.initializeApp(firebaseConfigDevelopment);
+} else {
+  app = firebase.initializeApp(firebaseConfigProduction);
+}
 
 const db = getFirestore(app);
 const googleAuthProvider = getAuth(app);
@@ -32,26 +48,6 @@ export const uploadImage = (file) => {
   const storageRef = ref(storage, `images/${file.name}`);
   var uploadTask = uploadBytesResumable(storageRef, file);
   return uploadTask;
-};
-
-export const listenArticles = (callback) => {
-  // const q = query(collection(db, "articles"));
-  // const unsubscribe = onSnapshot(q, (snapshot) => {
-  //   const articles = [];
-  //   snapshot.docs.map((doc) => {
-  //     articles.push(doc.data().article);
-  //   });
-  //   console.log(articles);
-  // });
-  // return onSnapshot(({ docs }) => {
-  //   const newArticles = docs.map((doc) => {
-  //     return {
-  //       id: doc.id,
-  //       ...doc.data(),
-  //     };
-  //   });
-  //   callback(newArticles);
-  // });
 };
 
 const googleProvider = new GoogleAuthProvider();

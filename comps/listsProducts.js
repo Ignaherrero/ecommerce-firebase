@@ -9,16 +9,19 @@ import {
   Text,
 } from "@chakra-ui/react";
 import { motion } from "framer-motion";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { nanoid } from "nanoid";
+import { collection, deleteDoc, doc, getDocs, query } from "firebase/firestore";
+import { db } from "../firebase/firebase-config";
 
-export const ListsAndEditProducts = ({ products, isLoading }) => {
+export const ListsAndEditProducts = ({ isLoading, isOpen, setIsLoading }) => {
   const [isDelete, setIsDelete] = useState(false);
+  const [products, setProducts] = useState([]);
 
   const handleDeleteAnArticle = async (product) => {
-    setIsDelete(true);
+    setIsLoading(true);
     await deleteDoc(doc(db, "article", product));
-    setIsDelete(false);
+    setIsLoading(false);
   };
 
   const handleEditeAnArticle = async ({ product, price, urlImage }) => {
@@ -27,12 +30,24 @@ export const ListsAndEditProducts = ({ products, isLoading }) => {
     setValue("price", price);
   };
 
+  useEffect(() => {
+    if (!isLoading) {
+      const getData = async () => {
+        const docRef = await getDocs(query(collection(db, "article")));
+        setProducts(docRef.docs.map((item) => item.data()));
+      };
+     
+      getData();
+    }
+
+
+  }, [isLoading]);
+
   return (
     <>
       {isLoading ? (
         <p>Cargando...</p>
-      ) : 
-      (
+      ) : (
         <List
           styleType="none"
           spacing={2}
@@ -47,16 +62,13 @@ export const ListsAndEditProducts = ({ products, isLoading }) => {
 
           {products.map((product) => {
             return (
-              <motion.div
-                initial={{ scale: 0 }}
-                animate={{ scale: 1 }}
-                key={nanoid()}
-              >
+              <>
                 <Flex
                   alignItems="center"
                   justifyContent="space-between"
                   height="70px"
                   borderRadius="sm"
+                  key={nanoid()}
                 >
                   <Image
                     src={product.urlImage}
@@ -91,7 +103,7 @@ export const ListsAndEditProducts = ({ products, isLoading }) => {
                   </ButtonGroup>
                 </Flex>
                 <Divider orientation="horizontal" border="1px" />
-              </motion.div>
+              </>
             );
           })}
         </List>

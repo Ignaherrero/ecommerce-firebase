@@ -21,26 +21,12 @@ import { Login } from "../../comps/login";
 import { ListsAndEditProducts } from "../../comps/listsProducts";
 
 export default function Productos() {
-  const [products, setProducts] = useState([]);
-  const [isDelete, setIsDelete] = useState(false);
+  // const [products, setProducts] = useState([]);
+
   const [isLoading, setIsLoading] = useState(false);
   const { isOpen, onOpen, onClose } = useDisclosure();
 
   const { login: isLogin, setLogin } = useContext(ContextLogin);
-
-  useEffect(() => {
-    if (localStorage.getItem("products")) {
-      setProducts(JSON.parse(localStorage.getItem("products")));
-    } else if (isLogin) {
-      setIsLoading(false);
-      const getData = async () => {
-        const docRef = await getDocs(query(collection(db, "article")));
-        setProducts(docRef.docs.map((item) => item.data()));
-      };
-      getData();
-      setIsLoading(false);
-    }
-  }, [isLoading, isDelete]);
 
   useEffect(() => {
     const auth = getAuth();
@@ -49,7 +35,6 @@ export default function Productos() {
         // User is signed in, see docs for a list of available properties
         // https://firebase.google.com/docs/reference/js/firebase.User
         const uid = user.uid;
-        console.log("entro");
         setLogin(true);
       } else {
         // User is signed out
@@ -83,9 +68,17 @@ export default function Productos() {
             >
               Agregar producto
             </Button>
-            <ListsAndEditProducts products={products}/>
-            <ModalEditProducts products={products} isLoading />
-            
+            <ListsAndEditProducts
+              isOpen
+              isLoading={isLoading}
+              setIsLoading={setIsLoading}
+            />
+            <ModalEditProducts
+              isLoading={isLoading}
+              setIsLoading={setIsLoading}
+              isOpen={isOpen}
+              onClose={onClose}
+            />
           </Container>
           <Button onClick={handleLogOut}>Cerrar sesion</Button>
         </VStack>

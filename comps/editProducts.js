@@ -12,10 +12,12 @@ import {
   Textarea,
   useDisclosure,
 } from "@chakra-ui/react";
+import { doc, setDoc } from "firebase/firestore";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
+import { db } from "../firebase/firebase-config";
 
-export const ModalEditProducts = () => {
+export const ModalEditProducts = ({ isOpen, onClose, setIsLoading }) => {
   const {
     register,
     handleSubmit,
@@ -23,11 +25,9 @@ export const ModalEditProducts = () => {
     reset,
     setValue,
   } = useForm();
-  const { isOpen, onOpen, onClose } = useDisclosure();
   const [urlImage, setUrlImage] = useState("");
   const [image, setImage] = useState("");
   const [progress, setProgress] = useState(0);
-  const [isLoading, setIsLoading] = useState(false);
 
   const onSubmit = async (data) => {
     setIsLoading(true);
@@ -42,6 +42,7 @@ export const ModalEditProducts = () => {
     reset();
     onClose();
   };
+
   const handleUploadAnImage = (e) => {
     e.preventDefault();
     const file = e.dataTransfer.files[0];
@@ -103,14 +104,14 @@ export const ModalEditProducts = () => {
 
           <ModalFooter>
             <HStack width="100%" justifyContent="space-between">
-              <Button variant="ghost" onClick={onClose} isLoading={isLoading}>
+              <Button variant="ghost" onClick={onClose}>
                 Cerrar
               </Button>
               <Button
                 colorScheme="blue"
                 mr={3}
                 type="submit"
-                isLoading={isLoading}
+
               >
                 Guardar
               </Button>
