@@ -8,13 +8,17 @@ import {
   ListItem,
   Text,
 } from "@chakra-ui/react";
-import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
 import { nanoid } from "nanoid";
 import { collection, deleteDoc, doc, getDocs, query } from "firebase/firestore";
 import { db } from "../firebase/firebase-config";
 
-export const ListsAndEditProducts = ({ isLoading, isOpen, setIsLoading }) => {
+export const ListsAndEditProducts = ({
+  isLoading,
+  setIsLoading,
+  onOpen,
+  setValue,
+}) => {
   const [isDelete, setIsDelete] = useState(false);
   const [products, setProducts] = useState([]);
 
@@ -24,7 +28,7 @@ export const ListsAndEditProducts = ({ isLoading, isOpen, setIsLoading }) => {
     setIsLoading(false);
   };
 
-  const handleEditeAnArticle = async ({ product, price, urlImage }) => {
+  const handleEditeAnArticle = async ({ product, price }) => {
     onOpen();
     setValue("product", product);
     setValue("price", price);
@@ -36,11 +40,9 @@ export const ListsAndEditProducts = ({ isLoading, isOpen, setIsLoading }) => {
         const docRef = await getDocs(query(collection(db, "article")));
         setProducts(docRef.docs.map((item) => item.data()));
       };
-     
+
       getData();
     }
-
-
   }, [isLoading]);
 
   return (

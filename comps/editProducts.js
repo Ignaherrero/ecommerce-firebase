@@ -14,17 +14,16 @@ import {
 } from "@chakra-ui/react";
 import { doc, setDoc } from "firebase/firestore";
 import { useState } from "react";
-import { useForm } from "react-hook-form";
 import { db } from "../firebase/firebase-config";
 
-export const ModalEditProducts = ({ isOpen, onClose, setIsLoading }) => {
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-    reset,
-    setValue,
-  } = useForm();
+export const ModalEditProducts = ({
+  isOpen,
+  onClose,
+  setIsLoading,
+  register,
+  handleSubmit,
+  reset
+}) => {
   const [urlImage, setUrlImage] = useState("");
   const [image, setImage] = useState("");
   const [progress, setProgress] = useState(0);
@@ -107,12 +106,7 @@ export const ModalEditProducts = ({ isOpen, onClose, setIsLoading }) => {
               <Button variant="ghost" onClick={onClose}>
                 Cerrar
               </Button>
-              <Button
-                colorScheme="blue"
-                mr={3}
-                type="submit"
-
-              >
+              <Button colorScheme="blue" mr={3} type="submit">
                 Guardar
               </Button>
             </HStack>

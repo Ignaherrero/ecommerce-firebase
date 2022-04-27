@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Text,
   Box,
@@ -11,26 +11,23 @@ import {
   HStack,
 } from "@chakra-ui/react";
 import { nanoid } from "nanoid";
-import { db } from "../firebase/firebase-config";
+import { db, dbfirebase } from "../firebase/firebase-config";
 import { collection, getDocs, onSnapshot, query } from "firebase/firestore";
-import { motion } from "framer-motion";
-import { ContextLogin } from "../context/login-context";
 import { useRouter } from "next/router";
 
 const getData = async () => {
-  const docRef = await getDocs(query(collection(db, "article")));
+  const docRef = await getDocs(query(collection(db, dbfirebase.name)));
   return docRef.docs.map((item) => item.data());
 };
 
 export default function Home() {
   const [troley, setTroley] = useState([]);
   const [products, setProducts] = useState([]);
-  const context = useContext(ContextLogin);
   const router = useRouter();
 
   useEffect(() => {
 
-    const q = query(collection(db, "article"));
+    const q = query(collection(db, dbfirebase.name));
     onSnapshot(q, (querySnapshot) => {
       const localproducts = [];
       querySnapshot.forEach((doc) => {
@@ -79,7 +76,6 @@ export default function Home() {
   };
 
   const handleCompleteOrderWithWhatsApp = () => {
-    console.log("hola");
     let troleyProducts = troley.map((item) => {
       return `${item.product} ( x ${item.quantity}) ...$ ${
         item.price * item.quantity
@@ -125,12 +121,15 @@ export default function Home() {
                 })}
               </Text>
               <Flex justifyContent="center">
-                <Image
-                  src={product.urlImage}
-                  width="100px"
-                  height="90px"
-                  alt="product"
-                />
+                {product.urlImage ? (
+                  <Image
+                    src={product.urlImage}
+                    width="100px"
+                    height="90px"
+                    alt="product"
+                  />):(
+                  <p>No hay imagen</p>
+                )}
               </Flex>
               <HStack justifyContent="space-between" width="80%" margin="auto">
                 <Button

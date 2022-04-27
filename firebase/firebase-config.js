@@ -77,4 +77,8 @@ const signInWithGoogle = () => {
     });
 };
 
-export { db, googleAuthProvider, app, signInWithGoogle };
+const dbfirebase={
+  name:"article"
+}
+
+export { db, googleAuthProvider, app, signInWithGoogle, dbfirebase };
