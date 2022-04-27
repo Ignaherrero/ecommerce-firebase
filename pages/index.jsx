@@ -9,6 +9,7 @@ import {
   VStack,
   Stack,
   HStack,
+  SkeletonText,
 } from "@chakra-ui/react";
 import { nanoid } from "nanoid";
 import { db, dbfirebase } from "../firebase/firebase-config";
@@ -26,7 +27,6 @@ export default function Home() {
   const router = useRouter();
 
   useEffect(() => {
-
     const q = query(collection(db, dbfirebase.name));
     onSnapshot(q, (querySnapshot) => {
       const localproducts = [];
@@ -101,7 +101,23 @@ export default function Home() {
         <Text as="h2" textAlign="center">
           Tienda
         </Text>
-        <Text as="h3">{products?.length === 0 && "Cargando..."}</Text>
+        {products?.length === 0 && (
+          <VStack spacing={4}>
+            <SkeletonText
+              padding={3}
+              noOfLines={7}
+              spacing="4"
+              width="100%"
+              height="180px"
+              shadow="md"
+              borderWidth="1px"
+              backgroundColor="#ffffff"
+              borderRadius="lg"
+              fadeDuration={0.1}
+            />
+          </VStack>
+        )}
+
         <VStack spacing={4}>
           {products?.map((product) => (
             <Box
@@ -127,7 +143,8 @@ export default function Home() {
                     width="100px"
                     height="90px"
                     alt="product"
-                  />):(
+                  />
+                ) : (
                   <p>No hay imagen</p>
                 )}
               </Flex>
@@ -154,34 +171,38 @@ export default function Home() {
             </Box>
           ))}
         </VStack>
-
-        <Text marginTop={4} textAlign="right">
-          Total:
-          {troley
-            .reduce(
-              (total, item) =>
-                (total += parseFloat(item?.price) * parseInt(item?.quantity)),
-              0
-            )
-            .toLocaleString("es-AR", {
-              style: "currency",
-              currency: "ARS",
-            })}
-        </Text>
-        <Stack align="center" marginTop={6}>
-          <Button
-            onClick={handleRemoveAllArticlesFromTroley}
-            isDisabled={troley.length === 0}
-            width="100%"
-            variant="outline"
-            colorScheme="stealth"
-          >
-            Vaciar carrito
-          </Button>
-          <Button onClick={handleCompleteOrderWithWhatsApp}>
-            Completar pedido
-          </Button>
-        </Stack>
+        {products?.length > 0 && (
+          <>
+            <Text marginTop={4} textAlign="right">
+              Total:
+              {troley
+                .reduce(
+                  (total, item) =>
+                    (total +=
+                      parseFloat(item?.price) * parseInt(item?.quantity)),
+                  0
+                )
+                .toLocaleString("es-AR", {
+                  style: "currency",
+                  currency: "ARS",
+                })}
+            </Text>
+            <Stack align="center" marginTop={6}>
+              <Button
+                onClick={handleRemoveAllArticlesFromTroley}
+                isDisabled={troley.length === 0}
+                width="100%"
+                variant="outline"
+                colorScheme="stealth"
+              >
+                Vaciar carrito
+              </Button>
+              <Button onClick={handleCompleteOrderWithWhatsApp}>
+                Completar pedido
+              </Button>
+            </Stack>
+          </>
+        )}
       </Container>
     </Container>
   );
