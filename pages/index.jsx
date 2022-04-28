@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import {
   Text,
   Box,
@@ -13,35 +13,12 @@ import {
 } from "@chakra-ui/react";
 import { nanoid } from "nanoid";
 import { db, dbfirebase } from "../firebase/firebase-config";
-import { collection, getDocs, onSnapshot, query } from "firebase/firestore";
+import { collection, getDocs } from "firebase/firestore";
 import { useRouter } from "next/router";
 
-const getData = async () => {
-  const docRef = await getDocs(query(collection(db, dbfirebase.name)));
-  return docRef.docs.map((item) => item.data());
-};
-
-export default function Home() {
+export default function Home({ products }) {
   const [troley, setTroley] = useState([]);
-  const [products, setProducts] = useState([]);
   const router = useRouter();
-
-  useEffect(() => {
-    const q = query(collection(db, dbfirebase.name));
-    onSnapshot(q, (querySnapshot) => {
-      const localproducts = [];
-      querySnapshot.forEach((doc) => {
-        localproducts.push({
-          product: doc.data().product,
-          price: doc.data().price,
-          urlImage: doc.data().urlImage,
-        });
-      });
-      setProducts(localproducts);
-      localStorage.setItem("products", JSON.stringify(localproducts));
-    });
-    console.table(products);
-  }, []);
 
   const handleAddToTroley = (product) => {
     if (troley.length === 0) {
@@ -206,4 +183,24 @@ export default function Home() {
       </Container>
     </Container>
   );
+}
+
+export async function getStaticProps() {
+  const localproducts = [];
+
+  const QuerySnapshot = await getDocs(collection(db, dbfirebase.name));
+  QuerySnapshot.forEach((doc) => {
+    localproducts.push({
+      product: doc.data().product,
+      price: doc.data().price,
+      urlImage: doc.data().urlImage,
+    });
+  });
+
+  return {
+    props: {
+      products: localproducts,
+    },
+    revalidate: 259200,
+  };
 }
